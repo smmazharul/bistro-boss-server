@@ -207,6 +207,24 @@ async function run() {
       res.send( {insertResult,deleteResult} );
     })
 
+    app.get('/admin-stats',verifyJWT,verifyAdmin, async(req,res)=>{
+      const users=await usersCollection.estimatedDocumentCount();
+      const products=await menuCollection.estimatedDocumentCount();
+      const orders=await paymentCollection.estimatedDocumentCount();
+
+      //best way to sum of a field is to use group and sum operators
+
+
+      const payments=await paymentCollection.find().toArray();
+      const revenue=payments.reduce((sum,payment)=>sum+payment.price,0)
+
+      res.send({
+        revenue,
+        users,
+        products,
+        orders
+      })
+    })
 
 
 
