@@ -10,6 +10,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+
 const verifyJWT = (req, res, next) => {
   const authorization = req.headers.authorization;
   if (!authorization) {
@@ -75,11 +76,12 @@ async function run() {
     */
 
     // users related apis
-    app.get('/users', verifyJWT, verifyAdmin, async (req, res) => {
+    // users related apis
+    app.get('/users', async (req, res) => {
       const result = await usersCollection.find().toArray();
+      
       res.send(result);
     });
-
     app.post('/users', async (req, res) => {
       const user = req.body;
       const query = { email: user.email }
@@ -185,7 +187,7 @@ async function run() {
     //create payment intent 
     app.post('/create-payment-intent', verifyJWT, async(req,res)=>{
       const {price} =req.body;
-      const amount=price*100;
+      const amount=parseInt(price*100);
       const paymentIntent=await stripe.paymentIntents.create({
         amount:amount,
         currency:'usd',
